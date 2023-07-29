@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+    transpilePackages: [
+        '@ionic/core'
+    ]
+}
 
 module.exports = nextConfig
