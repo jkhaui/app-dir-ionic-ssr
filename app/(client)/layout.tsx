@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect} from "react";
-import {initialize} from "@ionic/core";
+import {initialize} from "@ionic/core/components";
 import {defineCustomElements} from "@ionic/core/loader";
 import {KonstaProvider, Link} from "konsta/react";
 import {TITLE} from "@/app/constants";
@@ -20,7 +20,7 @@ export default function ClientLayout({children}) {
 
     return (
         <KonstaProvider theme={'parent'}>
-            <ion-app className="flex min-h-screen flex-col items-center justify-between p-24">
+            <ion-app>
                 <ion-header translucent>
                     <ion-toolbar>
                         <Link slot="start" toolbar>
@@ -32,7 +32,17 @@ export default function ClientLayout({children}) {
                         <ion-title>{TITLE}</ion-title>
                     </ion-toolbar>
                 </ion-header>
-                {children}
+                <ion-split-pane when="lg" content-id="main">
+                    <ion-menu content-id="main">
+                        <ion-header>
+                            <ion-toolbar color="tertiary">
+                                <ion-title>Menu</ion-title>
+                            </ion-toolbar>
+                        </ion-header>
+                        <ion-content className="ion-padding"> Menu Content</ion-content>
+                    </ion-menu>
+                    {children}
+                </ion-split-pane>
             </ion-app>
         </KonstaProvider>
     );
