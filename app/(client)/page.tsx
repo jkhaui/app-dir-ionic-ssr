@@ -9,7 +9,7 @@ import {TITLE} from "@/app/constants";
 
 export default function Page() {
     return (
-        <div className={'ion-page'}>
+        <div className={'ion-page'} id={'main'}>
             <ion-content fullscreen scroll-y={true} className={'bg-gray-900'}>
 
                 <ion-header collapse={'condense'} className={'bg-gray-900 pt-12 max-w-5xl'}>

@@ -1,0 +1,1 @@
+export {IonApp} from './IonApp';

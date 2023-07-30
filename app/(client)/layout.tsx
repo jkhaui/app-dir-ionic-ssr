@@ -1,13 +1,17 @@
 'use client'
 
-import React, {useEffect} from "react";
-import {initialize} from "@ionic/core";
+import React, {useEffect, useLayoutEffect} from "react";
+import {initialize} from "@ionic/core/components";
 import {defineCustomElements} from "@ionic/core/loader";
 import {KonstaProvider, Link} from "konsta/react";
 import {TITLE} from "@/app/constants";
+import {IonApp} from '@/components';
 
 export default function ClientLayout({children}) {
     useEffect(() => {
+        // if (typeof (document as any) !== 'undefined') {
+        //     document.documentElement.classList.add('ion-ce');
+        // }
         // `useEffect` runs only on the client.
         // Therefore, this is the phase during which clientside hydration occurs.
         initialize({
@@ -19,8 +23,8 @@ export default function ClientLayout({children}) {
     }, []);
 
     return (
-        <KonstaProvider theme={'parent'}>
-            <ion-app className="flex min-h-screen flex-col items-center justify-between p-24">
+        // <KonstaProvider theme={'parent'}>
+            <ion-app>
                 <ion-header translucent>
                     <ion-toolbar>
                         <Link slot="start" toolbar>
@@ -32,8 +36,18 @@ export default function ClientLayout({children}) {
                         <ion-title>{TITLE}</ion-title>
                     </ion-toolbar>
                 </ion-header>
-                {children}
+                <ion-split-pane when="xs" content-id="main">
+                    <ion-menu content-id="main">
+                        <ion-header>
+                            <ion-toolbar color="tertiary">
+                                <ion-title>Menu</ion-title>
+                            </ion-toolbar>
+                        </ion-header>
+                        <ion-content className="ion-padding"> Menu Content</ion-content>
+                    </ion-menu>
+                    {children}
+                </ion-split-pane>
             </ion-app>
-        </KonstaProvider>
+        // </KonstaProvider>
     );
 }
