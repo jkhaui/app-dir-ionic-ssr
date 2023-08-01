@@ -1,5 +1,3 @@
 export default function Loading() {
-    return (
-        <div>Loading...</div>
-    )
+  return <div>Insert global splash screen or loader</div>;
 }
