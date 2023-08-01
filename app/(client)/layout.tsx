@@ -33,11 +33,6 @@ export default function ClientLayout({ tabs }) {
   return (
     <KonstaProvider theme={'parent'}>
       <ion-app>
-        <ion-header collapse={'fade'} translucent>
-          <ion-toolbar color={'dark'}>
-            <ion-title>{TITLE}</ion-title>
-          </ion-toolbar>
-        </ion-header>
         <ion-split-pane when='lg' content-id='main'>
           <ion-menu content-id='main'>
             <ion-header>
@@ -49,6 +44,11 @@ export default function ClientLayout({ tabs }) {
           </ion-menu>
           <div id={'main'} className={'md:min-h-full md:min-w-full'}>
             {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
+            <ion-header collapse={'fade'} translucent>
+              <ion-toolbar color={'transparent'}>
+                <ion-title>{TITLE}</ion-title>
+              </ion-toolbar>
+            </ion-header>
             <AnimatePresence mode={'wait'} initial={false}>
               {tabs}
             </AnimatePresence>
