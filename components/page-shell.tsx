@@ -27,7 +27,7 @@ export const PageShell = ({ children }) => {
         ref={virtuosoRef}
         // onScroll={(e) => console.log(e.target.scrollTop)}
         components={{ Scroller }}
-        className='ion-content-scroll-host min-h-full bg-slate-900 px-2 pt-16 text-gray-100'
+        className='ion-content-scroll-host min-h-full px-2 pt-16 text-gray-100'
         initialItemCount={1}
         itemContent={() => children}
         totalCount={1}
@@ -76,18 +76,9 @@ const Scroller: Components['Scroller'] = React.forwardRef(
       );
     }, [initialize]);
 
-    const refSetter = React.useCallback(
-      (node) => {
-        if (node) {
-          ref.current = node;
-        }
-      },
-      [ref]
-    );
-
     return (
       <ion-content fullscreen scroll-y={false}>
-        <div ref={refSetter} style={style} {...rest}>
+        <div ref={ref} style={style} {...rest}>
           <Header />
           <Block className={'pt-16'}>{children}</Block>
         </div>

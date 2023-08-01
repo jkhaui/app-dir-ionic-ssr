@@ -17,13 +17,6 @@ import '@ionic/core/css/normalize.css';
 import '@ionic/core/css/structure.css';
 import '@ionic/core/css/typography.css';
 
-/* Optional CSS utils that can be commented out */
-import '@ionic/core/css/padding.css';
-import '@ionic/core/css/float-elements.css';
-import '@ionic/core/css/text-alignment.css';
-import '@ionic/core/css/text-transformation.css';
-import '@ionic/core/css/flex-utils.css';
-import '@ionic/core/css/display.css';
 import 'overlayscrollbars/overlayscrollbars.css';
 import 'react-loading-skeleton/dist/skeleton.css';
 
@@ -36,16 +29,16 @@ export default function ClientLayout({ tabs }) {
         <ion-split-pane when='lg' content-id='main'>
           <ion-menu content-id='main'>
             <ion-header>
-              <ion-toolbar color='transparent'>
-                <ion-title>Menu</ion-title>
-              </ion-toolbar>
+              <ion-toolbar color='transparent'></ion-toolbar>
             </ion-header>
-            <ion-content>Menu Content</ion-content>
+            <ion-content>
+              <div className='pl-4 text-zinc-300'>Menu Content</div>
+            </ion-content>
           </ion-menu>
           <div id={'main'} className={'md:min-h-full md:min-w-full'}>
             {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
             <ion-header collapse={'fade'} translucent>
-              <ion-toolbar color={'transparent'}>
+              <ion-toolbar color='transparent'>
                 <ion-title>{TITLE}</ion-title>
               </ion-toolbar>
             </ion-header>

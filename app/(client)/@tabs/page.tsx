@@ -4,7 +4,7 @@ import { Image, PageShell } from '@/components';
 export default function Page() {
   return (
     <PageShell>
-      <div className='z-10 min-h-full w-full items-center justify-between bg-gray-900 pb-12 font-mono text-sm lg:flex lg:flex-col lg:items-center lg:justify-center'>
+      <div className='z-10 min-h-full w-full items-center justify-between pb-12 font-mono text-sm lg:flex lg:flex-col lg:items-center lg:justify-center'>
         <div className={'max-w-2xl'}>
           <div className='mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left'>
             <a
@@ -82,17 +82,17 @@ export default function Page() {
             <ion-text>app/page.tsx</ion-text>
           </div>
 
-          <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-            <Image
-              className='relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert'
-              src='/next.svg'
-              alt='Next.js Logo'
-              width={180}
-              height={37}
-            />
-          </div>
-
           <div className='fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white py-16 dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none'>
+            <div className="relative z-[-1] flex place-items-center pr-2 before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
+              <Image
+                className='relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert'
+                src='/next.svg'
+                alt='Next.js Logo'
+                width={180}
+                height={37}
+              />
+            </div>
+
             <a
               className='pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0'
               href='https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'

@@ -20,7 +20,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang='en' className={inter.className}>
-      <body className={'bg-slate-900'}>{children}</body>
+      <body className='bg-slate-900'>{children}</body>
     </html>
   );
 }

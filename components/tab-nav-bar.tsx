@@ -14,7 +14,11 @@ export const TabNavBar = () => {
   const [activeTab, setActiveTab] = React.useState('/');
 
   return (
-    <Tabbar labels className={'fixed bottom-0 left-0 bg-gray-900'}>
+    <Tabbar
+      labels
+      bgClassName={'bg-slate-900'}
+      className={'fixed bottom-0 left-0'}
+    >
       {routeLabels.map((route) => {
         const path = `${route !== '/' ? '/' : ''}${route.toLowerCase()}`;
 
@@ -22,9 +26,9 @@ export const TabNavBar = () => {
           <TabbarLink
             key={route}
             component={React.forwardRef((props, ref) => (
-              <NextLink ref={ref} {...props} href={path} />
+              <NextLink ref={ref} href={path} {...props} />
             ))}
-            active
+            active={activeTab === pathname}
             onClick={() => {
               setActiveTab(path);
               router.push(path);
