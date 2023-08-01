@@ -6,6 +6,7 @@ import { TITLE } from '@/app/constants';
 import type { Components } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
+import { Block } from 'konsta/react';
 
 export const PageShell = ({ children }) => {
   const virtuosoRef = React.useRef(null);
@@ -27,9 +28,6 @@ export const PageShell = ({ children }) => {
         // onScroll={(e) => console.log(e.target.scrollTop)}
         components={{ Scroller }}
         className='ion-content-scroll-host min-h-full bg-slate-900 px-2 pt-16 text-gray-100'
-        style={{
-          marginTop: '-7px',
-        }}
         initialItemCount={1}
         itemContent={() => children}
         totalCount={1}
@@ -91,7 +89,7 @@ const Scroller: Components['Scroller'] = React.forwardRef(
       <ion-content fullscreen scroll-y={false}>
         <div ref={refSetter} style={style} {...rest}>
           <Header />
-          {children}
+          <Block className={'pt-16'}>{children}</Block>
         </div>
       </ion-content>
     );
