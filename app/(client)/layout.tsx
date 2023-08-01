@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { KonstaProvider, Link } from 'konsta/react';
+import { KonstaProvider } from 'konsta/react';
 import { TITLE } from '@/app/constants';
 import { AnimatePresence } from 'framer-motion';
 import { TabNavBar } from '@/components';
@@ -34,20 +34,14 @@ export default function ClientLayout({ tabs }) {
     <KonstaProvider theme={'parent'}>
       <ion-app>
         <ion-header collapse={'fade'} translucent>
-          <ion-toolbar>
-            <Link slot='start' toolbar>
-              Link 1
-            </Link>
-            <Link slot='end' toolbar>
-              Link 2
-            </Link>
+          <ion-toolbar color={'dark'}>
             <ion-title>{TITLE}</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-split-pane when='lg' content-id='main'>
           <ion-menu content-id='main'>
             <ion-header>
-              <ion-toolbar color='tertiary'>
+              <ion-toolbar color='transparent'>
                 <ion-title>Menu</ion-title>
               </ion-toolbar>
             </ion-header>

@@ -1,1 +1,1 @@
-export const TITLE = 'Next.js App Dir + Ionic + Konsta UI: SSR Example';
+export const TITLE = 'Next App Dir + Ionic + Konsta: SSR';
