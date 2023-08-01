@@ -1,9 +1,10 @@
 'use client';
 
+import * as React from 'react';
 import { motion } from 'framer-motion';
 import { TITLE } from '@/app/constants';
-import * as React from 'react';
-import { Components, Virtuoso } from 'react-virtuoso';
+import type { Components } from 'react-virtuoso';
+import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 
 export const PageShell = ({ children }) => {
@@ -24,8 +25,8 @@ export const PageShell = ({ children }) => {
       <Virtuoso
         ref={virtuosoRef}
         // onScroll={(e) => console.log(e.target.scrollTop)}
-        components={{ Scroller, Header }}
-        className='ion-content-scroll-host min-h-full bg-slate-900 px-2 text-gray-100'
+        components={{ Scroller }}
+        className='ion-content-scroll-host min-h-full bg-slate-900 px-2 pt-16 text-gray-100'
         style={{
           marginTop: '-7px',
         }}
@@ -40,7 +41,7 @@ export const PageShell = ({ children }) => {
 const Header: Components['Header'] = () => {
   return (
     <ion-header collapse={'condense'}>
-      <ion-toolbar>
+      <ion-toolbar color={'transparent'}>
         <ion-title size={'large'}>{TITLE}</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -89,6 +90,7 @@ const Scroller: Components['Scroller'] = React.forwardRef(
     return (
       <ion-content fullscreen scroll-y={false}>
         <div ref={refSetter} style={style} {...rest}>
+          <Header />
           {children}
         </div>
       </ion-content>

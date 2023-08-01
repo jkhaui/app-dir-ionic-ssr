@@ -24,7 +24,7 @@ export const TabNavBar = () => {
             component={React.forwardRef((props, ref) => (
               <NextLink ref={ref} {...props} href={path} />
             ))}
-            active={activeTab === pathname}
+            active
             onClick={() => {
               setActiveTab(path);
               router.push(path);
