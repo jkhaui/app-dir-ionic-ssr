@@ -59,22 +59,22 @@ const Scroller: Components['Scroller'] = React.forwardRef(
         scrollbars: {
           theme: 'os-theme-dark',
           clickScroll: true,
-          visibility: 'visible',
+          visibility: 'auto',
         },
       },
     });
 
     React.useEffect(() => {
-      initialize(
-        {
-          target: ref.current,
-          elements: {
-            viewport: ref.current,
-          },
+      if (!ref) {
+        return;
+      }
+      initialize({
+        target: ref.current,
+        elements: {
+          viewport: ref.current,
         },
-        {}
-      );
-    }, [initialize]);
+      });
+    }, [initialize, ref]);
 
     return (
       <ion-content fullscreen scroll-y={false}>
