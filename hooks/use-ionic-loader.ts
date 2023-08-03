@@ -8,11 +8,17 @@ interface IonicLoaderOptions {
   mode?: 'ios' | 'md';
 }
 
-export const useIonicLoader = (options?: IonicLoaderOptions) => {
-  const hasBootstrappedLoaderRef = React.useRef(false);
+export enum State {
+  INITIALIZING = 'INITIALIZING',
+  COMPLETE = 'COMPLETE',
+  ERROR = 'ERROR',
+}
 
-  return React.useEffect(() => {
-    if (hasBootstrappedLoaderRef.current) {
+export const useIonicLoader = (options?: IonicLoaderOptions) => {
+  const [state, setState] = React.useState(State.INITIALIZING);
+
+  React.useEffect(() => {
+    if (state === State.COMPLETE) {
       return;
     }
     // `useEffect` runs only on the client.
@@ -23,8 +29,14 @@ export const useIonicLoader = (options?: IonicLoaderOptions) => {
       mode: options?.mode || 'ios',
     });
 
-    defineCustomElements(window).then(
-      () => (hasBootstrappedLoaderRef.current = true)
-    );
-  }, [options?.mode]);
+    defineCustomElements(window)
+      .then(() => setState(State.COMPLETE))
+      .catch(() => setState(State.ERROR));
+  }, [state, options?.mode]);
+
+  return {
+    initializing: state === State.INITIALIZING,
+    complete: state === State.COMPLETE,
+    error: state === State.ERROR,
+  };
 };
