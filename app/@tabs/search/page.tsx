@@ -4,7 +4,7 @@ export default async function Page() {
   return (
     <PageShell>
       <div>
-        <h1>Contact Page</h1>
+        <h1>Search Page</h1>
       </div>
       <div className={'pt-6 text-gray-300'}>Some content</div>
     </PageShell>
