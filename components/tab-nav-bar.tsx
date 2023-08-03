@@ -10,14 +10,14 @@ const ROOT_PATH = '/';
 export const TabNavBar = ({
   tabLabels,
   tabIcons,
-  labels,
+  labels = true,
   icons,
   tabbarProps = {},
 }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = React.useState(ROOT_PATH);
+  const [activeTab, setActiveTab] = React.useState(pathname);
 
   const { className, bgClassName, ...rest } = tabbarProps;
 
@@ -43,14 +43,23 @@ export const TabNavBar = ({
           <TabbarLink
             key={route}
             component={React.forwardRef((props, ref) => (
-              <NextLink ref={ref} href={path} {...props} />
+              <NextLink
+                ref={ref}
+                href={path}
+                className={'text-zinc-300'}
+                {...props}
+              />
             ))}
-            active={activeTab === pathname}
+            active={path === activeTab}
             onClick={() => {
               setActiveTab(path);
               router.push(path);
             }}
-            lab1el={labels && (route !== ROOT_PATH ? route : tabLabels[index])}
+            colors={{
+              textIos: 'text-slate-400',
+              textMaterial: 'text-slate-400',
+            }}
+            label={labels && (route !== ROOT_PATH ? route : tabLabels[index])}
             icon={
               icons &&
               tabIcons.length > 0 && (

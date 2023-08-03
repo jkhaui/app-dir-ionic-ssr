@@ -34,7 +34,14 @@ export default async function RootLayout({ tabs }: { tabs: React.ReactNode }) {
   return (
     <html lang='en' className={inter.className}>
       <body className='bg-slate-900'>
-        <Wrapper tabLabels={tabLabels}>{tabs}</Wrapper>
+        <Wrapper
+          options={{
+            mode: 'ios',
+          }}
+          tabLabels={tabLabels}
+        >
+          {tabs}
+        </Wrapper>
       </body>
     </html>
   );

@@ -1,10 +1,10 @@
 'use client';
 
+import * as React from 'react';
 import { KonstaProvider } from 'konsta/react';
 import { TITLE } from '@/app/constants';
 import { AnimatePresence } from 'framer-motion';
 import { TabNavBar } from '@/components/tab-nav-bar';
-import * as React from 'react';
 import {
   GearIcon,
   HomeIcon,
@@ -13,11 +13,20 @@ import {
 } from '@radix-ui/react-icons';
 import { useIonicLoader } from '@/hooks';
 
+const Defaults = {
+  THEME: 'ios',
+  SPLIT_PANE_CONTENT_ID: 'main',
+  SPLIT_PANE_BREAKPOINT: 'lg',
+  TOOLBAR_COLOR: 'transparent',
+  DARK: true,
+  TOUCH_RIPPLE: false,
+  ANIMATE_PRESENCE_MODE: 'wait',
+  ANIMATE_PRESENCE_INITIAL: false,
+};
+
 export const ClientLayout = ({
-  // tabs,
+  options,
   children,
-  dark,
-  touchRipple,
   SplitPaneContentSlot = null,
   splitPaneLayout = true,
   showTabsOnDesktop = true,
@@ -40,19 +49,23 @@ export const ClientLayout = ({
   const { mode, initial, ...restAnimatePresenceProps } = animatePresenceProps;
   const { labels, icons, ...restTabbarProps } = tabbarProps;
 
-  const id = contentId || 'main';
+  const id = contentId || Defaults.SPLIT_PANE_CONTENT_ID;
 
   return (
-    <KonstaProvider theme={'parent'} dark={dark} touchRipple={touchRipple}>
+    <KonstaProvider
+      theme={options?.theme || Defaults.THEME}
+      dark={options?.dark || Defaults.DARK}
+      touchRipple={options?.touchRipple || Defaults.TOUCH_RIPPLE}
+    >
       <ion-app>
         <ion-split-pane
           disabled={!splitPaneLayout}
-          when={when || 'lg'}
+          when={when || Defaults.SPLIT_PANE_BREAKPOINT}
           content-id={id}
         >
           <ion-menu content-id={id}>
             <ion-header>
-              <ion-toolbar color={toolbarColor || 'transparent'}>
+              <ion-toolbar color={toolbarColor || Defaults.TOOLBAR_COLOR}>
                 <ion-title>{sidePanelTitle}</ion-title>
               </ion-toolbar>
             </ion-header>
@@ -63,13 +76,13 @@ export const ClientLayout = ({
           <div id={id} className={'md:min-h-full md:min-w-full'}>
             {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
             <ion-header collapse={'fade'} translucent>
-              <ion-toolbar color='transparent'>
+              <ion-toolbar color={Defaults.TOOLBAR_COLOR}>
                 <ion-title>{TITLE}</ion-title>
               </ion-toolbar>
             </ion-header>
             <AnimatePresence
-              mode={mode || 'wait'}
-              initial={initial || false}
+              mode={mode || Defaults.ANIMATE_PRESENCE_MODE}
+              initial={initial || Defaults.ANIMATE_PRESENCE_INITIAL}
               {...restAnimatePresenceProps}
             >
               {children}
