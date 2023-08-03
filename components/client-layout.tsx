@@ -54,13 +54,13 @@ export const ClientLayout = ({
   return (
     <KonstaProvider
       theme={options?.theme || Defaults.THEME}
-      dark={options?.dark || Defaults.DARK}
-      touchRipple={options?.touchRipple || Defaults.TOUCH_RIPPLE}
+      dark={options?.dark ?? Defaults.DARK}
+      touchRipple={options?.touchRipple ?? Defaults.TOUCH_RIPPLE}
     >
       <ion-app>
         <ion-split-pane
           disabled={!splitPaneLayout}
-          when={when || Defaults.SPLIT_PANE_BREAKPOINT}
+          when={when ?? Defaults.SPLIT_PANE_BREAKPOINT}
           content-id={id}
         >
           <ion-menu content-id={id}>

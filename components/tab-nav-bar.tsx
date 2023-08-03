@@ -7,6 +7,10 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const ROOT_PATH = '/';
 
+const ComposedNextLink = React.forwardRef((props, ref) => (
+  <NextLink ref={ref} href={props.path} {...props} />
+));
+
 export const TabNavBar = ({
   tabLabels,
   tabIcons,
@@ -30,7 +34,7 @@ export const TabNavBar = ({
     <Tabbar
       labels={labels || true}
       icons={icons || false}
-      bgClassName={bgClassName ?? 'bg-slate-900'}
+      bgClassName={bgClassName ?? 'bg-transparent'}
       className={className ?? 'fixed bottom-0 left-0'}
       {...rest}
     >
@@ -42,14 +46,8 @@ export const TabNavBar = ({
         return (
           <TabbarLink
             key={route}
-            component={React.forwardRef((props, ref) => (
-              <NextLink
-                ref={ref}
-                href={path}
-                className={'text-zinc-300'}
-                {...props}
-              />
-            ))}
+            component={ComposedNextLink}
+            href={path}
             active={path === activeTab}
             onClick={() => {
               setActiveTab(path);
