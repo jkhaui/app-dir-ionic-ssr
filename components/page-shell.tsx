@@ -78,6 +78,16 @@ const Scroller: Components['Scroller'] = React.forwardRef(
 
     return (
       <ion-content fullscreen scroll-y={false}>
+        <ion-refresher
+          id='refresher'
+          slot='fixed'
+          pull-factor={0.5}
+          pull-min={1500}
+          pull-factor={1.2}
+        >
+          <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
+
         <div ref={ref} style={style} {...rest}>
           <Header />
           <Block className={'pt-16'}>{children}</Block>
