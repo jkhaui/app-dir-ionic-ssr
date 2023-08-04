@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { TITLE } from '@/app/constants';
 import type { Components } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { Block } from 'konsta/react';
+import OptionsContext from '@/contexts/options-context';
 
 export const PageShell = ({ children }) => {
   const virtuosoRef = React.useRef(null);
@@ -37,10 +37,12 @@ export const PageShell = ({ children }) => {
 };
 
 const Header: Components['Header'] = () => {
+  const options = React.useContext(OptionsContext);
+
   return (
     <ion-header collapse={'condense'}>
       <ion-toolbar color={'transparent'}>
-        <ion-title size={'large'}>{TITLE}</ion-title>
+        <ion-title size={'large'}>{options.headerTitle}</ion-title>
       </ion-toolbar>
     </ion-header>
   );
@@ -48,9 +50,9 @@ const Header: Components['Header'] = () => {
 
 const Scroller: Components['Scroller'] = React.forwardRef(
   ({ style, children, ...rest }, ref) => {
-    const [initialize, instance] = useOverlayScrollbars({
-      // Just an example of providing custom options; they're not necessary to get
-      // `overlayscrollbars-react` working with `react-virtuoso`
+    const options = React.useContext(OptionsContext);
+
+    const [initialize] = useOverlayScrollbars({
       options: {
         showNativeOverlaidScrollbars: false,
         overflow: {
@@ -59,7 +61,7 @@ const Scroller: Components['Scroller'] = React.forwardRef(
         scrollbars: {
           theme: 'os-theme-dark',
           clickScroll: true,
-          visibility: 'auto',
+          visibility: 'visible',
         },
       },
     });
@@ -68,6 +70,7 @@ const Scroller: Components['Scroller'] = React.forwardRef(
       if (!ref) {
         return;
       }
+
       initialize({
         target: ref.current,
         elements: {
@@ -78,16 +81,17 @@ const Scroller: Components['Scroller'] = React.forwardRef(
 
     return (
       <ion-content fullscreen scroll-y={false}>
-        <ion-refresher
-          id='refresher'
-          slot='fixed'
-          pull-factor={0.5}
-          pull-min={1500}
-          pull-factor={1.2}
-        >
-          <ion-refresher-content></ion-refresher-content>
-        </ion-refresher>
-
+        {options.pullToRefresh && (
+          <ion-refresher
+            id='refresher'
+            slot='fixed'
+            pull-factor={0.5}
+            pull-min={1500}
+            pull-factor={1.2}
+          >
+            <ion-refresher-content></ion-refresher-content>
+          </ion-refresher>
+        )}
         <div ref={ref} style={style} {...rest}>
           <Header />
           <Block className={'pt-16'}>{children}</Block>

@@ -2,14 +2,23 @@
 
 import * as React from 'react';
 import { Icon, Tabbar, TabbarLink } from 'konsta/react';
+import type { LinkProps } from 'next/link';
 import { default as NextLink } from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
+interface ComposedNextLinkProps extends LinkProps {
+  active?: boolean;
+  component?: string;
+  linkProps?: any;
+  icon?: React.ReactNode;
+  label?: string | React.ReactNode;
+}
+
 const ROOT_PATH = '/';
 
-const ComposedNextLink = React.forwardRef((props, ref) => (
-  <NextLink ref={ref} href={props.path} {...props} />
-));
+const ComposedNextLink = React.forwardRef<ComposedNextLinkProps, any>(
+  (props, ref) => <NextLink ref={ref} href={props.path} {...props} />
+);
 
 export const TabNavBar = ({
   tabLabels,
@@ -54,6 +63,9 @@ export const TabNavBar = ({
           route !== ROOT_PATH ? ROOT_PATH : ''
         }${route.toLowerCase()}`;
 
+        const IconIos = tabIcons[index]?.ios ?? tabIcons[index];
+        const IconMaterial = tabIcons[index]?.material ?? tabIcons[index];
+
         return (
           <TabbarLink
             key={route}
@@ -72,12 +84,7 @@ export const TabNavBar = ({
             icon={
               icons &&
               tabIcons.length > 0 && (
-                <Icon
-                  ios={tabIcons[index]}
-                  material={tabIcons[index]}
-                  // ios={tabIcons[index]?.ios}
-                  // material={tabIcons[index]?.material}
-                />
+                <Icon ios={<IconIos />} material={<IconMaterial />} />
               )
             }
           />

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { KonstaProvider } from 'konsta/react';
-import { TITLE } from '@/app/constants';
 import { AnimatePresence } from 'framer-motion';
 import { TabNavBar } from '@/components/tab-nav-bar';
 import {
@@ -12,24 +11,41 @@ import {
   PersonIcon,
 } from '@radix-ui/react-icons';
 import { useIonicLoader } from '@/hooks';
+import { OptionsProvider } from '@/contexts/options-provider';
 
-const Defaults = {
-  THEME: 'ios',
-  SPLIT_PANE_CONTENT_ID: 'main',
-  SPLIT_PANE_BREAKPOINT: 'lg',
-  TOOLBAR_COLOR: 'transparent',
-  DARK: true,
-  TOUCH_RIPPLE: false,
-  ANIMATE_PRESENCE_MODE: 'wait',
-  ANIMATE_PRESENCE_INITIAL: false,
+interface Options {
+  theme: 'ios' | 'material';
+  dark?: boolean;
+  touchRipple?: boolean;
+  splitPaneLayoutDisabled?: boolean;
+  splitPaneContentId?: string;
+  splitPaneBreakpoint?: string | number | boolean;
+  showTabsOnDesktop?: boolean;
+  pullToRefresh?: boolean;
+  animatePresenceMode?: string;
+  animatePresenceInitial?: boolean;
+  toolbarColor?: string;
+}
+
+const defaultOptions = {
+  theme: 'ios',
+  splitPaneContentId: 'main',
+  splitPaneBreakpoint: 'lg',
+  toolbarColor: 'transparent',
+  dark: false,
+  touchRipple: false,
+  animatePresenceMode: 'wait',
+  animatePresenceInitial: false,
+  pullToRefresh: true,
+  showTabsOnDesktop: true,
+  splitPaneLayoutDisabled: false,
 };
 
 export const ClientLayout = ({
   options,
   children,
+  headerTitle = null,
   SplitPaneContentSlot = null,
-  splitPaneLayout = true,
-  showTabsOnDesktop = true,
   splitPaneProps = {},
   animatePresenceProps = {},
   tabLabels,
@@ -38,67 +54,71 @@ export const ClientLayout = ({
 }) => {
   useIonicLoader();
 
+  const mergedOptions = { ...defaultOptions, ...options, headerTitle };
+
   const {
     when,
     contentId,
     title: sidePanelTitle,
     toolbarColor,
     fullscreenContent: sidePanelFullscreenContent,
-    ...restSplitPaneProps
+    ...splitPaneRestProps
   } = splitPaneProps;
-  const { mode, initial, ...restAnimatePresenceProps } = animatePresenceProps;
-  const { labels, icons, ...restTabbarProps } = tabbarProps;
+  const { mode, initial, ...animatePresenceRestProps } = animatePresenceProps;
+  const { labels, icons, ...tabbarRestProps } = tabbarProps;
 
-  const id = contentId || Defaults.SPLIT_PANE_CONTENT_ID;
+  const id = contentId || defaultOptions.splitPaneContentId;
 
   return (
-    <KonstaProvider
-      theme={options?.theme || Defaults.THEME}
-      dark={options?.dark ?? Defaults.DARK}
-      touchRipple={options?.touchRipple ?? Defaults.TOUCH_RIPPLE}
-    >
-      <ion-app>
-        <ion-split-pane
-          disabled={!splitPaneLayout}
-          when={when ?? Defaults.SPLIT_PANE_BREAKPOINT}
-          content-id={id}
-        >
-          <ion-menu content-id={id}>
-            <ion-header>
-              <ion-toolbar color={toolbarColor || Defaults.TOOLBAR_COLOR}>
-                <ion-title>{sidePanelTitle}</ion-title>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content fullscreen={sidePanelFullscreenContent}>
-              {SplitPaneContentSlot}
-            </ion-content>
-          </ion-menu>
-          <div id={id} className={'md:min-h-full md:min-w-full'}>
-            {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
-            <ion-header collapse={'fade'} translucent>
-              <ion-toolbar color={Defaults.TOOLBAR_COLOR}>
-                <ion-title>{TITLE}</ion-title>
-              </ion-toolbar>
-            </ion-header>
-            <AnimatePresence
-              mode={mode || Defaults.ANIMATE_PRESENCE_MODE}
-              initial={initial || Defaults.ANIMATE_PRESENCE_INITIAL}
-              {...restAnimatePresenceProps}
-            >
-              {children}
-            </AnimatePresence>
-            {showTabsOnDesktop && (
-              <TabNavBar
-                tabLabels={tabLabels}
-                tabIcons={tabIcons}
-                labels={labels}
-                icons={icons}
-                {...restTabbarProps}
-              />
-            )}
-          </div>
-        </ion-split-pane>
-      </ion-app>
-    </KonstaProvider>
+    <OptionsProvider options={mergedOptions}>
+      <KonstaProvider
+        theme={options?.theme || defaultOptions.theme}
+        dark={options?.dark ?? defaultOptions.dark}
+        touchRipple={options?.touchRipple ?? defaultOptions.touchRipple}
+      >
+        <ion-app>
+          <ion-split-pane
+            disabled={mergedOptions.splitPaneLayoutDisabled}
+            when={when ?? mergedOptions.splitPaneBreakpoint}
+            content-id={id}
+          >
+            <ion-menu content-id={id}>
+              <ion-header>
+                <ion-toolbar color={toolbarColor || mergedOptions.toolbarColor}>
+                  <ion-title>{sidePanelTitle}</ion-title>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content fullscreen={sidePanelFullscreenContent}>
+                {SplitPaneContentSlot}
+              </ion-content>
+            </ion-menu>
+            <div id={id} className={'md:min-h-full md:min-w-full'}>
+              {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
+              <ion-header collapse={'fade'} translucent>
+                <ion-toolbar color={mergedOptions.toolbarColor}>
+                  {headerTitle && <ion-title>{headerTitle}</ion-title>}
+                </ion-toolbar>
+              </ion-header>
+              <AnimatePresence
+                mode={mode ?? mergedOptions.animatePresenceMode}
+                initial={initial ?? mergedOptions.animatePresenceInitial}
+                {...animatePresenceRestProps}
+              >
+                {children}
+              </AnimatePresence>
+              {mergedOptions.showTabsOnDesktop && (
+                <TabNavBar
+                  tabLabels={tabLabels}
+                  tabIcons={tabIcons}
+                  labels={labels}
+                  icons={icons}
+                  {...tabbarRestProps}
+                />
+              )}
+            </div>
+          </ion-split-pane>
+        </ion-app>
+      </KonstaProvider>
+    </OptionsProvider>
   );
 };

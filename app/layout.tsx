@@ -15,6 +15,7 @@ import '@ionic/core/css/typography.css';
 
 import 'overlayscrollbars/overlayscrollbars.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { TITLE } from '@/app/constants';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,9 +35,14 @@ export default async function RootLayout({ tabs }: { tabs: React.ReactNode }) {
     <html lang='en' className={inter.className}>
       <body className='bg-slate-900'>
         <Wrapper
+          headerTitle={TITLE}
           options={{
             mode: 'ios',
             dark: false,
+          }}
+          tabbarProps={{
+            icons: true,
+            labels: true,
           }}
           tabLabels={tabLabels}
         >
