@@ -25,10 +25,21 @@ export const TabNavBar = ({
 
   const { className, bgClassName, ...rest } = tabbarProps;
 
-  if (labels && icons && tabLabels.length !== tabIcons.length) {
-    throw new Error('');
+  if (!tabLabels.length) {
+    throw new Error(
+      'An array of strings must be provided for the `tabLabels` prop, as these define the routes' +
+        'for your application.'
+    );
   }
-  const tabRoutes = [ROOT_PATH, ...tabLabels?.slice(1)];
+  if (tabLabels.length !== tabIcons.length) {
+    throw new Error(
+      'If tab icons are provided, they must be in the same position and count as the tab ' +
+        'labels. If a given tab should have an icon only, then provide an empty string for that position within ' +
+        '`tabLabels`.'
+    );
+  }
+
+  const tabRoutes = [ROOT_PATH, ...tabLabels.slice(1)];
 
   return (
     <Tabbar
