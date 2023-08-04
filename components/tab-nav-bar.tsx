@@ -43,8 +43,8 @@ export const TabNavBar = ({
 
   return (
     <Tabbar
-      labels={labels || true}
-      icons={icons || false}
+      labels={labels ?? true}
+      icons={icons ?? false}
       bgClassName={bgClassName ?? 'bg-transparent'}
       className={className ?? 'fixed bottom-0 left-0'}
       {...rest}
