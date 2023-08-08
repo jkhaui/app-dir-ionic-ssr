@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { KonstaProvider } from 'konsta/react';
-import { TabNavBar } from '@/components';
+import { TabNavBar } from './tab-nav-bar';
 import {
   GearIcon,
   HomeIcon,
