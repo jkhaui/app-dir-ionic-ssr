@@ -7,7 +7,7 @@ import { default as NextLink } from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useInAppNavigation } from '@/hooks';
 import { ROOT_PATH } from '@/utils';
-import type { NavigationOps } from '@/context-providers';
+import { NavigationOps } from '@/context-providers';
 
 interface ComposedNextLinkProps extends LinkProps {
   active?: boolean;
