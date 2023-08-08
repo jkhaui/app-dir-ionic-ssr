@@ -4,7 +4,10 @@ import * as React from 'react';
 import { Icon, Tabbar, TabbarLink } from 'konsta/react';
 import type { LinkProps } from 'next/link';
 import { default as NextLink } from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useInAppNavigation } from '@/hooks';
+import { ROOT_PATH } from '@/utils';
+import type { NavigationOps } from '@/context-providers';
 
 interface ComposedNextLinkProps extends LinkProps {
   active?: boolean;
@@ -13,8 +16,6 @@ interface ComposedNextLinkProps extends LinkProps {
   icon?: React.ReactNode;
   label?: string | React.ReactNode;
 }
-
-const ROOT_PATH = '/';
 
 const ComposedNextLink = React.forwardRef<ComposedNextLinkProps, any>(
   (props, ref) => <NextLink ref={ref} href={props.path} {...props} />
@@ -27,10 +28,10 @@ export const TabNavBar = ({
   icons,
   tabbarProps = {},
 }) => {
-  const pathname = usePathname();
   const router = useRouter();
+  const { inAppNavigation, updateInAppNavigation } = useInAppNavigation();
 
-  const [activeTab, setActiveTab] = React.useState(pathname);
+  const { activeTab } = inAppNavigation;
 
   const { className, bgClassName, ...rest } = tabbarProps;
 
@@ -73,8 +74,9 @@ export const TabNavBar = ({
             href={path}
             active={path === activeTab}
             onClick={() => {
-              setActiveTab(path);
               router.push(path);
+
+              updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, path);
             }}
             colors={{
               textIos: 'text-slate-400',

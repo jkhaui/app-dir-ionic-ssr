@@ -1,48 +1,40 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import type { Components } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { Block } from 'konsta/react';
-import OptionsContext from '@/contexts/options-context';
+import { useOptions } from '@/hooks';
 
 export const PageShell = ({ children }) => {
   const virtuosoRef = React.useRef(null);
 
   return (
-    <motion.div
-      className={'ion-page'}
-      initial={{ x: 300, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 300, opacity: 0 }}
-      transition={{
-        type: 'spring',
-        stiffness: 260,
-        damping: 20,
-      }}
-    >
-      <Virtuoso
-        ref={virtuosoRef}
-        // onScroll={(e) => console.log(e.target.scrollTop)}
-        components={{ Scroller }}
-        className='ion-content-scroll-host min-h-full px-2 pt-16 text-gray-100'
-        initialItemCount={1}
-        itemContent={() => children}
-        totalCount={1}
-      />
-    </motion.div>
+    <Virtuoso
+      ref={virtuosoRef}
+      // onScroll={(e) => console.log(e.target.scrollTop)}
+      components={{ Scroller }}
+      className='ion-content-scroll-host min-h-full px-2 pt-16 text-gray-100'
+      initialItemCount={1}
+      itemContent={() => children}
+      totalCount={1}
+    />
   );
 };
 
 const Header: Components['Header'] = () => {
-  const options = React.useContext(OptionsContext);
+  const options = useOptions();
 
   return (
     <ion-header collapse={'condense'}>
       <ion-toolbar color={'transparent'}>
-        <ion-title size={'large'}>{options.headerTitle}</ion-title>
+        <ion-title
+          size={options.headerTitleSize}
+          color={options?.headerTitleColor}
+        >
+          {options.headerTitle}
+        </ion-title>
       </ion-toolbar>
     </ion-header>
   );
@@ -50,7 +42,7 @@ const Header: Components['Header'] = () => {
 
 const Scroller: Components['Scroller'] = React.forwardRef(
   ({ style, children, ...rest }, ref) => {
-    const options = React.useContext(OptionsContext);
+    const options = useOptions();
 
     const [initialize] = useOverlayScrollbars({
       options: {

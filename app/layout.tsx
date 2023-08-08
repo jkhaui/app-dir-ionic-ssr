@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ClientLayout as Wrapper } from '@/components';
+import { TITLE } from '@/utils';
 
 import './globals.css';
 
@@ -15,7 +16,6 @@ import '@ionic/core/css/typography.css';
 
 import 'overlayscrollbars/overlayscrollbars.css';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { TITLE } from '@/app/constants';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,7 +30,9 @@ export const metadata: Metadata = {
 
 const tabLabels = ['Home', 'Account', 'Search', 'Settings'];
 
-export default async function RootLayout({ tabs }: { tabs: React.ReactNode }) {
+export default async function RootLayout(props: { tabs: React.ReactNode }) {
+  const { tabs, modal, children } = props;
+  console.log(props);
   return (
     <html lang='en' className={inter.className}>
       <body className='bg-slate-900'>
@@ -47,6 +49,7 @@ export default async function RootLayout({ tabs }: { tabs: React.ReactNode }) {
           tabLabels={tabLabels}
         >
           {tabs}
+          {children}
         </Wrapper>
       </body>
     </html>

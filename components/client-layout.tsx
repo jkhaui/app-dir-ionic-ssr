@@ -2,8 +2,7 @@
 
 import * as React from 'react';
 import { KonstaProvider } from 'konsta/react';
-import { AnimatePresence } from 'framer-motion';
-import { TabNavBar } from '@/components/tab-nav-bar';
+import { TabNavBar } from '@/components';
 import {
   GearIcon,
   HomeIcon,
@@ -11,7 +10,8 @@ import {
   PersonIcon,
 } from '@radix-ui/react-icons';
 import { useIonicLoader } from '@/hooks';
-import { OptionsProvider } from '@/contexts/options-provider';
+import { IonColors } from '@/types';
+import { InAppNavigationProvider, OptionsProvider } from '@/context-providers';
 
 interface Options {
   theme: 'ios' | 'material';
@@ -25,8 +25,18 @@ interface Options {
   animatePresenceMode?: string;
   animatePresenceInitial?: boolean;
   toolbarColor?: string;
+  headerTitleSize: 'large' | 'small' | undefined;
+  headerTitleColor: IonColors;
+  disablePwaHelper?: PwaHelperOptions;
+  showBackButtonText?: boolean;
+  backButtonText?: React.ReactNode | string;
 }
 
+type PwaHelperOptions = {
+  iosBodyScrollLock: boolean;
+  noTextSelection: boolean;
+  noIosZoomOnFocus: boolean;
+};
 const defaultOptions = {
   theme: 'ios',
   splitPaneContentId: 'main',
@@ -39,6 +49,8 @@ const defaultOptions = {
   pullToRefresh: true,
   showTabsOnDesktop: true,
   splitPaneLayoutDisabled: false,
+  headerTitleSize: 'large',
+  showBackButtonText: true,
 };
 
 export const ClientLayout = ({
@@ -71,54 +83,54 @@ export const ClientLayout = ({
 
   return (
     <OptionsProvider options={mergedOptions}>
-      <KonstaProvider
-        theme={options?.theme || defaultOptions.theme}
-        dark={options?.dark ?? defaultOptions.dark}
-        touchRipple={options?.touchRipple ?? defaultOptions.touchRipple}
-      >
-        <ion-app>
-          <ion-split-pane
-            disabled={mergedOptions.splitPaneLayoutDisabled}
-            when={when ?? mergedOptions.splitPaneBreakpoint}
-            content-id={id}
-          >
-            <ion-menu content-id={id}>
-              <ion-header>
-                <ion-toolbar color={toolbarColor || mergedOptions.toolbarColor}>
-                  <ion-title>{sidePanelTitle}</ion-title>
-                </ion-toolbar>
-              </ion-header>
-              <ion-content fullscreen={sidePanelFullscreenContent}>
-                {SplitPaneContentSlot}
-              </ion-content>
-            </ion-menu>
-            <div id={id} className={'md:min-h-full md:min-w-full'}>
-              {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
-              <ion-header collapse={'fade'} translucent>
-                <ion-toolbar color={mergedOptions.toolbarColor}>
-                  {headerTitle && <ion-title>{headerTitle}</ion-title>}
-                </ion-toolbar>
-              </ion-header>
-              <AnimatePresence
-                mode={mode ?? mergedOptions.animatePresenceMode}
-                initial={initial ?? mergedOptions.animatePresenceInitial}
-                {...animatePresenceRestProps}
-              >
+      <InAppNavigationProvider>
+        <KonstaProvider
+          theme={options?.theme || defaultOptions.theme}
+          dark={options?.dark ?? defaultOptions.dark}
+          touchRipple={options?.touchRipple ?? defaultOptions.touchRipple}
+        >
+          <ion-app>
+            <ion-split-pane
+              disabled={mergedOptions.splitPaneLayoutDisabled}
+              when={when ?? mergedOptions.splitPaneBreakpoint}
+              content-id={id}
+            >
+              <ion-menu content-id={id}>
+                <ion-header>
+                  <ion-toolbar
+                    color={toolbarColor || mergedOptions.toolbarColor}
+                  >
+                    <ion-title>{sidePanelTitle}</ion-title>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content fullscreen={sidePanelFullscreenContent}>
+                  {SplitPaneContentSlot}
+                </ion-content>
+              </ion-menu>
+              <div id={id} className={'md:min-h-full md:min-w-full'}>
+                {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
+                <ion-header collapse={'fade'} translucent>
+                  <ion-toolbar color={mergedOptions.toolbarColor}>
+                    <ion-buttons slot={'start'}></ion-buttons>
+                    {headerTitle && <ion-title>{headerTitle}</ion-title>}
+                    <ion-buttons slot={'end'}></ion-buttons>
+                  </ion-toolbar>
+                </ion-header>
                 {children}
-              </AnimatePresence>
-              {mergedOptions.showTabsOnDesktop && (
-                <TabNavBar
-                  tabLabels={tabLabels}
-                  tabIcons={tabIcons}
-                  labels={labels}
-                  icons={icons}
-                  {...tabbarRestProps}
-                />
-              )}
-            </div>
-          </ion-split-pane>
-        </ion-app>
-      </KonstaProvider>
+                {mergedOptions.showTabsOnDesktop && (
+                  <TabNavBar
+                    tabLabels={tabLabels}
+                    tabIcons={tabIcons}
+                    labels={labels}
+                    icons={icons}
+                    {...tabbarRestProps}
+                  />
+                )}
+              </div>
+            </ion-split-pane>
+          </ion-app>
+        </KonstaProvider>
+      </InAppNavigationProvider>
     </OptionsProvider>
   );
 };

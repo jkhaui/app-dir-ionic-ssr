@@ -1,5 +1,3 @@
-'use client';
-
 export default function Page() {
-  return null;
+  return <div>SHEET</div>;
 }

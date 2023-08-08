@@ -19,3 +19,12 @@ ion-menu,
 ion-menu::part(container) {
     background: transparent;
 }
+
+.back-button-wrapper {
+    text-transform: capitalize !important;
+}
+
+.back-button-wrapper > svg {
+    width: 30px;
+    height: 30px;
+}
