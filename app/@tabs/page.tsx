@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Image, PageShell } from '@/components';
+import { Image, Screen } from '@/components';
 
 export default async function Page() {
   return (
-    <PageShell>
+    <Screen>
       <div className='z-10 min-h-full w-full items-center justify-between pb-12 font-mono text-sm lg:flex lg:flex-col lg:items-center lg:justify-center'>
         <div className={'max-w-2xl'}>
           <div className='mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left'>
@@ -169,6 +169,6 @@ export default async function Page() {
           </div>
         </div>
       </div>
-    </PageShell>
+    </Screen>
   );
 }

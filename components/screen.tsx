@@ -5,9 +5,32 @@ import type { Components } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { Block } from 'konsta/react';
+import { motion } from 'framer-motion';
 import { useOptions } from '@/hooks';
 
-export const PageShell = ({ children }) => {
+const AnimatedScreenWrapper = ({ animateLeftToRight, children }) => {
+  return (
+    <motion.div
+      className={'ion-page z-40 min-h-full min-w-full bg-slate-900'}
+      initial={{ [animateLeftToRight ? 'x' : 'y']: 300, opacity: 0 }}
+      animate={{ [animateLeftToRight ? 'x' : 'y']: 0, opacity: 1 }}
+      exit={{ [animateLeftToRight ? 'x' : 'y']: 300, opacity: 0 }}
+      transition={{
+        type: 'spring',
+        stiffness: 260,
+        damping: 20,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+export const Screen = ({
+  children,
+  animateLeftToRight,
+  animateBottomToTop,
+}) => {
   const virtuosoRef = React.useRef(null);
 
   return (
@@ -19,6 +42,8 @@ export const PageShell = ({ children }) => {
       initialItemCount={1}
       itemContent={() => children}
       totalCount={1}
+      animateLeftToRight={animateLeftToRight}
+      animateBottomToTop={animateBottomToTop}
     />
   );
 };
@@ -40,8 +65,28 @@ const Header: Components['Header'] = () => {
   );
 };
 
-const Scroller: Components['Scroller'] = React.forwardRef(
-  ({ style, children, ...rest }, ref) => {
+interface ScreenProps extends React.HTMLProps<{}> {
+  animateLeftToRight?: boolean;
+  animateBottomToTop?: boolean;
+}
+
+const Scroller: Components['Scroller'] = React.forwardRef<{}, ScreenProps>(
+  ({ style, ...rest }, ref) => {
+    const { animateLeftToRight, animateBottomToTop } = rest;
+
+    if (animateLeftToRight || animateBottomToTop) {
+      return (
+        <AnimatedScreenWrapper animateLeftToRight={animateLeftToRight}>
+          <CustomIonContent ref={ref} style={style} {...rest} />
+        </AnimatedScreenWrapper>
+      );
+    }
+
+    return <CustomIonContent ref={ref} style={style} {...rest} />;
+  }
+);
+const CustomIonContent = React.forwardRef<any, any>(
+  ({ children, style, ...rest }, ref) => {
     const options = useOptions();
 
     const [initialize] = useOverlayScrollbars({

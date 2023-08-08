@@ -1,9 +1,9 @@
-import { PageShell } from '@/components';
+import { Screen } from '@/components';
 import Link from 'next/link';
 
 export default async function Page() {
   return (
-    <PageShell>
+    <Screen>
       <div>
         <h1>Account Page</h1>
       </div>
@@ -15,6 +15,6 @@ export default async function Page() {
           Click <Link href='/user/abc-11123'>here</Link> to view a user.
         </div>
       </div>
-    </PageShell>
+    </Screen>
   );
 }

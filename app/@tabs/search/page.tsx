@@ -1,4 +1,4 @@
-import { PageShell } from '@/components';
+import { Screen } from '@/components';
 
 const getContent = async () => {
   const res = await fetch(
@@ -16,11 +16,11 @@ export default async function Page() {
   const bodyContent = data?.response?.content?.fields?.bodyText;
 
   return (
-    <PageShell>
+    <Screen>
       <div>
         <h1>Search Page</h1>
       </div>
       <div className={'max-w-lg pt-6 text-gray-300'}>{bodyContent}</div>
-    </PageShell>
+    </Screen>
   );
 }
