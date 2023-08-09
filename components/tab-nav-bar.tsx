@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Icon, Tabbar, TabbarLink } from 'konsta/react';
 import type { LinkProps } from 'next/link';
 import { default as NextLink } from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useInAppNavigation } from '@/hooks';
 import { ROOT_PATH } from '@/utils';
 import { NavigationOps } from '@/context-providers';
@@ -28,12 +28,22 @@ export const TabNavBar = ({
   icons,
   tabbarProps = {},
 }) => {
+  const pathname = usePathname();
   const router = useRouter();
+
   const { inAppNavigation, updateInAppNavigation } = useInAppNavigation();
 
   const { activeTab } = inAppNavigation;
 
   const { className, bgClassName, ...rest } = tabbarProps;
+
+  const tabRoutes = [ROOT_PATH, ...tabLabels.slice(1)];
+
+  React.useEffect(() => {
+    // As it stands, this hook seems necessary to listen to users navigating back/forward
+    // using the native browser controls and updating the active tab accordingly.
+    updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, pathname);
+  }, [pathname, updateInAppNavigation]);
 
   if (!tabLabels.length) {
     throw new Error(
@@ -48,8 +58,6 @@ export const TabNavBar = ({
         '`tabLabels`.'
     );
   }
-
-  const tabRoutes = [ROOT_PATH, ...tabLabels.slice(1)];
 
   return (
     <Tabbar
