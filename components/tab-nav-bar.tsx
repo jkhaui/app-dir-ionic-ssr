@@ -43,7 +43,8 @@ export const TabNavBar = ({
     // As it stands, this hook seems necessary to listen to users navigating back/forward
     // using the native browser controls and updating the active tab accordingly.
     updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, pathname);
-  }, [pathname, updateInAppNavigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   if (!tabLabels.length) {
     throw new Error(
