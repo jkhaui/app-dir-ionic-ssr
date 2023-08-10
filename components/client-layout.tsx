@@ -9,7 +9,7 @@ import {
   MagnifyingGlassIcon,
   PersonIcon,
 } from '@radix-ui/react-icons';
-import { useIonicLoader } from '@/hooks';
+import { useIonicLoader, useScreenTitle } from '@/hooks';
 import { IonColors } from '@/types';
 import { InAppNavigationProvider, OptionsProvider } from '@/context-providers';
 
@@ -66,7 +66,14 @@ export const ClientLayout = ({
 }) => {
   useIonicLoader();
 
-  const mergedOptions = { ...defaultOptions, ...options, headerTitle };
+  const title = useScreenTitle(tabLabels[0]);
+
+  const mergedOptions = {
+    ...defaultOptions,
+    ...options,
+    headerTitle,
+    tabLabels,
+  };
 
   const {
     when,
@@ -109,13 +116,6 @@ export const ClientLayout = ({
               </ion-menu>
               <div id={id} className={'md:min-h-full md:min-w-full'}>
                 {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
-                <ion-header collapse={'fade'} translucent>
-                  <ion-toolbar color={mergedOptions.toolbarColor}>
-                    <ion-buttons slot={'start'}></ion-buttons>
-                    {headerTitle && <ion-title>{headerTitle}</ion-title>}
-                    <ion-buttons slot={'end'}></ion-buttons>
-                  </ion-toolbar>
-                </ion-header>
                 {children}
                 {mergedOptions.showTabsOnDesktop && (
                   <TabNavBar

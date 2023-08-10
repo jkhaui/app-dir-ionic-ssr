@@ -1,5 +1,9 @@
-import { LoadingScreen } from '@/components/loading-screen';
+import { DefaultLoadingSkeleton, LoadingScreen } from '@/components';
 
 export default function Loading() {
-  return <LoadingScreen />;
+  return (
+    <LoadingScreen className={'max-w-lg pt-16'} center={false}>
+      <DefaultLoadingSkeleton />
+    </LoadingScreen>
+  );
 }

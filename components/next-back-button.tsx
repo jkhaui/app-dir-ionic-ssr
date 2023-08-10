@@ -1,13 +1,11 @@
 'use client';
 
+import * as React from 'react';
 import { Button, Icon } from 'konsta/react';
 import { ArrowLeftIcon, CaretLeftIcon } from '@radix-ui/react-icons';
-import { useRouter } from 'next/navigation';
 
 import { IonColors } from '@/types';
-import { useInAppNavigation, useOptions } from '@/hooks';
-import * as React from 'react';
-import type { NavigationOps } from '@/context-providers';
+import { useInAppNavigation, useNavigateBack, useOptions } from '@/hooks';
 
 interface NextBackButtonProps {
   defaultHref: string | undefined;
@@ -26,14 +24,21 @@ export const NextBackButton = ({
 }: NextBackButtonProps) => {
   const options = useOptions();
 
-  const { inAppNavigation, updateInAppNavigation } = useInAppNavigation();
+  const { inAppNavigation } = useInAppNavigation();
 
-  const router = useRouter();
-  console.log(router, window.history, inAppNavigation);
-  const showBackButton =
-    defaultHref !== undefined && inAppNavigation.nonTabHistoryStack.length > 0;
+  const handleNavigateBack = useNavigateBack();
 
-  if (!showBackButton) {
+  const [display, setDisplay] = React.useState(
+    defaultHref !== undefined || inAppNavigation.nonTabHistoryStack?.length > 0
+  );
+
+  React.useEffect(() => {
+    if (inAppNavigation.nonTabHistoryStack?.length > 0) {
+      setDisplay(true);
+    }
+  }, [inAppNavigation, inAppNavigation.nonTabHistoryStack]);
+
+  if (!display) {
     return null;
   }
 
@@ -42,8 +47,7 @@ export const NextBackButton = ({
       clear
       rounded
       onClick={() => {
-        router.back();
-        updateInAppNavigation(NavigationOps.POP_NON_TAB_ROUTE);
+        handleNavigateBack();
       }}
       colors={{
         activeBgIos: '',

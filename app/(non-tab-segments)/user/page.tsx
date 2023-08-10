@@ -1,3 +1,3 @@
 export default function Page() {
-  return <div>SHEET</div>;
+  return null;
 }

@@ -6,12 +6,38 @@ import { Virtuoso } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { Block } from 'konsta/react';
 import { motion } from 'framer-motion';
-import { useOptions } from '@/hooks';
+import { useInAppNavigation, useOptions, useScreenTitle } from '@/hooks';
+import { NextBackButton } from '@/components/next-back-button';
+import { NavigationOps } from '@/context-providers';
 
-const AnimatedScreenWrapper = ({ animateLeftToRight, children }) => {
+interface ScreenProps extends AnimatedScreenWrapperProps {
+  animateLeftToRight?: boolean;
+  animateBottomToTop?: boolean;
+  options: any;
+  inAppNavigation: any;
+  overlayTabbar: boolean;
+}
+
+interface AnimatedScreenWrapperProps extends React.HTMLProps<any> {
+  overlayTabbar: boolean;
+  animateLeftToRight?: boolean;
+  children: JSX.Element;
+  pullToRefreshOptions: any;
+}
+
+type PullToRefreshOptions = {
+  enabled: boolean;
+};
+const AnimatedScreenWrapper = ({
+  overlayTabbar,
+  animateLeftToRight,
+  children,
+}: AnimatedScreenWrapperProps) => {
   return (
     <motion.div
-      className={'ion-page z-40 min-h-full min-w-full bg-slate-900'}
+      className={`ion-page ${
+        overlayTabbar ? 'z-50' : 'z-30'
+      } min-h-full min-w-full bg-slate-900`}
       initial={{ [animateLeftToRight ? 'x' : 'y']: 300, opacity: 0 }}
       animate={{ [animateLeftToRight ? 'x' : 'y']: 0, opacity: 1 }}
       exit={{ [animateLeftToRight ? 'x' : 'y']: 300, opacity: 0 }}
@@ -28,10 +54,27 @@ const AnimatedScreenWrapper = ({ animateLeftToRight, children }) => {
 
 export const Screen = ({
   children,
+  overlayTabbar = false,
   animateLeftToRight,
   animateBottomToTop,
-}) => {
+  pullToRefreshOptions = {},
+}: ScreenProps) => {
   const virtuosoRef = React.useRef(null);
+
+  const {
+    updateInAppNavigation,
+    inAppNavigation: { scrollToTop },
+  } = useInAppNavigation();
+
+  React.useEffect(() => {
+    if (scrollToTop) {
+      updateInAppNavigation(NavigationOps.END_SCROLL_TO_TOP);
+      virtuosoRef.current.scrollTo({
+        behavior: 'smooth',
+        top: 0,
+      });
+    }
+  }, [scrollToTop, updateInAppNavigation]);
 
   return (
     <Virtuoso
@@ -44,11 +87,12 @@ export const Screen = ({
       totalCount={1}
       animateLeftToRight={animateLeftToRight}
       animateBottomToTop={animateBottomToTop}
+      overlayTabbar={overlayTabbar}
     />
   );
 };
 
-const Header: Components['Header'] = () => {
+const Header: Components['Header'] = ({ title }) => {
   const options = useOptions();
 
   return (
@@ -58,37 +102,70 @@ const Header: Components['Header'] = () => {
           size={options.headerTitleSize}
           color={options?.headerTitleColor}
         >
-          {options.headerTitle}
+          {title}
         </ion-title>
       </ion-toolbar>
     </ion-header>
   );
 };
 
-interface ScreenProps extends React.HTMLProps<{}> {
-  animateLeftToRight?: boolean;
-  animateBottomToTop?: boolean;
-}
-
 const Scroller: Components['Scroller'] = React.forwardRef<{}, ScreenProps>(
-  ({ style, ...rest }, ref) => {
-    const { animateLeftToRight, animateBottomToTop } = rest;
+  (
+    { style, overlayTabbar, animateLeftToRight, animateBottomToTop, ...rest },
+    ref
+  ) => {
+    const options = useOptions();
+    const title = useScreenTitle(options.tabLabels[0]);
 
     if (animateLeftToRight || animateBottomToTop) {
       return (
-        <AnimatedScreenWrapper animateLeftToRight={animateLeftToRight}>
-          <CustomIonContent ref={ref} style={style} {...rest} />
+        <AnimatedScreenWrapper
+          overlayTabbar={overlayTabbar}
+          animateLeftToRight={animateLeftToRight}
+        >
+          <ion-header collapse={'fade'} translucent>
+            <ion-toolbar color={options.toolbarColor}>
+              <ion-buttons slot='start'>
+                <NextBackButton />
+              </ion-buttons>
+              {title && <ion-title>{title}</ion-title>}
+              <ion-buttons slot={'end'}></ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <CustomIonContent
+            ref={ref}
+            style={style}
+            options={options}
+            title={title}
+            {...rest}
+          />
         </AnimatedScreenWrapper>
       );
     }
-
-    return <CustomIonContent ref={ref} style={style} {...rest} />;
+    console.log(title);
+    return (
+      <div className={'ion-page z-30 min-h-full min-w-full bg-slate-900'}>
+        <ion-header collapse={'fade'} translucent>
+          <ion-toolbar color={options.toolbarColor}>
+            <ion-buttons slot='start'></ion-buttons>
+            {title && <ion-title>{title}</ion-title>}
+            <ion-buttons slot={'end'}></ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <CustomIonContent
+          ref={ref}
+          style={style}
+          title={title}
+          options={options}
+          {...rest}
+        />
+      </div>
+    );
   }
 );
-const CustomIonContent = React.forwardRef<any, any>(
-  ({ children, style, ...rest }, ref) => {
-    const options = useOptions();
 
+const CustomIonContent = React.forwardRef<any, any>(
+  ({ children, style, options, title, ...rest }, ref) => {
     const [initialize] = useOverlayScrollbars({
       options: {
         showNativeOverlaidScrollbars: false,
@@ -117,23 +194,36 @@ const CustomIonContent = React.forwardRef<any, any>(
     }, [initialize, ref]);
 
     return (
-      <ion-content fullscreen scroll-y={false}>
-        {options.pullToRefresh && (
-          <ion-refresher
-            id='refresher'
-            slot='fixed'
-            pull-factor={0.5}
-            pull-min={1500}
-            pull-factor={1.2}
-          >
-            <ion-refresher-content></ion-refresher-content>
-          </ion-refresher>
-        )}
-        <div ref={ref} style={style} {...rest}>
-          <Header />
-          <Block className={'pt-16'}>{children}</Block>
-        </div>
-      </ion-content>
+      <>
+        {/*<ion-header collapse={'fade'} translucent>*/}
+        {/*  <ion-toolbar color={options.toolbarColor}>*/}
+        {/*    {title && <ion-title>{title}</ion-title>}*/}
+        {/*    <ion-buttons slot={'end'}></ion-buttons>*/}
+        {/*  </ion-toolbar>*/}
+        {/*</ion-header>*/}
+        <ion-content fullscreen scroll-y={false}>
+          {options.pullToRefresh && (
+            <ion-refresher
+              id='refresher'
+              slot='fixed'
+              pull-factor={0.5}
+              pull-min={100}
+              pull-max={200}
+            >
+              <ion-refresher-content></ion-refresher-content>
+            </ion-refresher>
+          )}
+          <div ref={ref} style={style} {...rest}>
+            <Header title={title} />
+            <Block className='relative min-h-full pt-16'>
+              {children}
+              <BottomSafeSpace />
+            </Block>
+          </div>
+        </ion-content>
+      </>
     );
   }
 );
+
+const BottomSafeSpace = () => <div style={{ height: 50 }} />;

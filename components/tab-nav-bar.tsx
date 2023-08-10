@@ -33,18 +33,31 @@ export const TabNavBar = ({
 
   const { inAppNavigation, updateInAppNavigation } = useInAppNavigation();
 
-  const { activeTab } = inAppNavigation;
+  const { activeTab, nonTabHistoryStack } = inAppNavigation;
 
   const { className, bgClassName, ...rest } = tabbarProps;
 
-  const tabRoutes = [ROOT_PATH, ...tabLabels.slice(1)];
+  const tabRoutes = React.useMemo(
+    () => [
+      ROOT_PATH,
+      ...tabLabels
+        .slice(1)
+        .map(
+          (route: string) =>
+            `${route !== ROOT_PATH ? ROOT_PATH : ''}${route.toLowerCase()}`
+        ),
+    ],
+    [tabLabels]
+  );
 
   React.useEffect(() => {
     // As it stands, this hook seems necessary to listen to users navigating back/forward
     // using the native browser controls and updating the active tab accordingly.
-    updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, pathname);
+    updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, {
+      path: pathname,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, tabRoutes]);
 
   if (!tabLabels.length) {
     throw new Error(
@@ -65,33 +78,50 @@ export const TabNavBar = ({
       labels={labels ?? true}
       icons={icons ?? false}
       bgClassName={bgClassName ?? 'bg-transparent'}
-      className={className ?? 'fixed bottom-0 left-0'}
+      className={className ?? 'fixed bottom-0 left-0 z-40'}
       {...rest}
     >
       {tabRoutes.map((route, index) => {
-        const path = `${
-          route !== ROOT_PATH ? ROOT_PATH : ''
-        }${route.toLowerCase()}`;
-
         const IconIos = tabIcons[index]?.ios ?? tabIcons[index];
         const IconMaterial = tabIcons[index]?.material ?? tabIcons[index];
+
+        const isActive = route === activeTab;
+
+        const handleClick = () => {
+          if (isActive) {
+            if (nonTabHistoryStack.length > 0) {
+              updateInAppNavigation(NavigationOps.CLEAR_NON_TAB_ROUTES);
+
+              return;
+            }
+
+            updateInAppNavigation(NavigationOps.START_SCROLL_TO_TOP);
+            return;
+          }
+
+          router.push(route);
+
+          // Updating the current tab and clearing any visible stacked secondary
+          // screens must be called as 2 contiguous, synchronous operations.
+          // This is because if state is updated as a single action,
+          // then the stacked screens will be cleared before transition to the
+          // new tab occurs, resulting in janky UX.
+          updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, route);
+          updateInAppNavigation(NavigationOps.CLEAR_NON_TAB_ROUTES);
+        };
 
         return (
           <TabbarLink
             key={route}
             component={ComposedNextLink}
-            href={path}
-            active={path === activeTab}
-            onClick={() => {
-              router.push(path);
-
-              updateInAppNavigation(NavigationOps.REPLACE_TAB_ROUTE, path);
-            }}
+            href={route}
+            active={isActive}
+            onClick={handleClick}
             colors={{
               textIos: 'text-slate-400',
               textMaterial: 'text-slate-400',
             }}
-            label={labels && (route !== ROOT_PATH ? route : tabLabels[index])}
+            label={tabLabels[index]}
             icon={
               icons &&
               tabIcons.length > 0 && (

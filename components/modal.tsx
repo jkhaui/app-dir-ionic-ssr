@@ -1,17 +1,20 @@
 'use client';
 
-import { Block, Navbar, Page, Popup } from 'konsta/react';
+import { Block, Navbar, Popup } from 'konsta/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { NextBackButton } from '@/components/next-back-button';
+import { NextBackButton } from '@/components';
+import { useNavigateBack } from '@/hooks';
 
 export const Modal = () => {
+  const handleNavigateBack = useNavigateBack();
+
   return (
     <motion.div
-      className={'ion-page'}
-      initial={{ x: 300, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 300, opacity: 0 }}
+      className={'ion-page z-50'}
+      initial={{ y: 200, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 200, opacity: 0 }}
       transition={{
         type: 'spring',
         stiffness: 260,
@@ -21,11 +24,14 @@ export const Modal = () => {
       <Popup
         opened
         colors={{
-          bg: 'bg-slate-900',
+          bg: 'bg-slate-600',
         }}
-        onBackdropClick={() => {}}
+        size={'h-5/6'}
+        onBackdropClick={() => {
+          handleNavigateBack();
+        }}
       >
-        <Page>
+        <>
           <Navbar
             title='Popup'
             right={
@@ -66,7 +72,7 @@ export const Modal = () => {
               libero.
             </p>
           </Block>
-        </Page>
+        </>
       </Popup>
     </motion.div>
   );
