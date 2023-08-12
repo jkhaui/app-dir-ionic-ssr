@@ -2,24 +2,11 @@
 
 import * as React from 'react';
 import { Icon, Tabbar, TabbarLink } from 'konsta/react';
-import type { LinkProps } from 'next/link';
-import { default as NextLink } from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useInAppNavigation } from '@/hooks';
+import { useInAppNavigation, useOptions } from '@/hooks';
 import { ROOT_PATH } from '@/utils';
 import { NavigationOps } from '@/context-providers';
-
-interface ComposedNextLinkProps extends LinkProps {
-  active?: boolean;
-  component?: string;
-  linkProps?: any;
-  icon?: React.ReactNode;
-  label?: string | React.ReactNode;
-}
-
-const ComposedNextLink = React.forwardRef<ComposedNextLinkProps, any>(
-  (props, ref) => <NextLink ref={ref} href={props.path} {...props} />
-);
+import { ComposedNextLink } from '@/components/composed-next-link';
 
 export const TabNavBar = ({
   tabLabels,
@@ -28,6 +15,8 @@ export const TabNavBar = ({
   icons,
   tabbarProps = {},
 }) => {
+  const options = useOptions();
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -77,7 +66,7 @@ export const TabNavBar = ({
     <Tabbar
       labels={labels ?? true}
       icons={icons ?? false}
-      bgClassName={bgClassName ?? 'bg-transparent'}
+      bgClassName={bgClassName ?? (options.theme === 'ios' && 'bg-transparent')}
       className={className ?? 'fixed bottom-0 left-0 z-40'}
       {...rest}
     >
