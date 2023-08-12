@@ -92,6 +92,9 @@ dependencies:
   use-immer:
     specifier: ^0.9.0
     version: 0.9.0(immer@10.0.2)(react@18.2.0)
+  use-local-storage-state:
+    specifier: ^18.3.3
+    version: 18.3.3(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   eslint-config-prettier:
@@ -5060,6 +5063,17 @@ packages:
     dependencies:
       immer: 10.0.2
       react: 18.2.0
+    dev: false
+
+  /use-local-storage-state@18.3.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-SwwW6LPbxf3q5XimJyYE2jBefpvEJTjAgBO47wCs0+ZkL/Hx8heF/0wtBJ7Df0SiSwyfNDIPHo+8Z3q569jlow==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /util-deprecate@1.0.2:
