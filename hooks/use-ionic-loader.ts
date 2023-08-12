@@ -5,7 +5,7 @@ import { initialize } from '@ionic/core/components';
 import { defineCustomElements } from '@ionic/core/loader';
 
 interface IonicLoaderOptions {
-  mode?: 'ios' | 'md';
+  mode: 'ios' | 'material' | 'md';
 }
 
 export enum State {
@@ -14,7 +14,7 @@ export enum State {
   ERROR = 'ERROR',
 }
 
-export const useIonicLoader = (options?: IonicLoaderOptions) => {
+export const useIonicLoader = (options: IonicLoaderOptions) => {
   const [state, setState] = React.useState(State.INITIALIZING);
 
   React.useEffect(() => {
@@ -26,7 +26,7 @@ export const useIonicLoader = (options?: IonicLoaderOptions) => {
     initialize({
       // Forcing the global Ionic mode `ios` to confirm that the setup is working
       // with a custom configuration.
-      mode: options?.mode || 'ios',
+      mode: options.mode === 'material' ? 'md' : options.mode,
     });
 
     defineCustomElements(window)
