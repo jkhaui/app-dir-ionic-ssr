@@ -4,7 +4,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useIsNativePlatform } from './use-is-native-platform';
 import { breakpoints } from '@/utils';
 
-export const useIsMobile = () => {
+export const useIsMobileDevice = () => {
   const isMobile = useMediaQuery({
     query: `(max-width: ${breakpoints?.sm?.max})`,
   });
