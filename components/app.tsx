@@ -95,7 +95,7 @@ export const App = ({
   tabIcons = [HomeIcon, PersonIcon, MagnifyingGlassIcon, GearIcon],
   tabbarProps = {},
 }) => {
-  const mergedOptions = {
+  const sharedOptions = {
     ...defaultOptions,
     ...options,
     headerTitle,
@@ -103,7 +103,7 @@ export const App = ({
   };
 
   const [theme] = useLocalStorageState(LOCAL_STORAGE_KEY_DEFAULT_THEME, {
-    defaultValue: getPlatformThemeOrMode(mergedOptions.theme),
+    defaultValue: getPlatformThemeOrMode(sharedOptions.theme),
   });
 
   useIonicLoader({
@@ -123,30 +123,32 @@ export const App = ({
   const { mode, initial, ...animatePresenceRestProps } = animatePresenceProps;
   const { labels, icons, ...tabbarRestProps } = tabbarProps;
 
+  const { splashScreenProps } = sharedOptions;
+
   const id = contentId || defaultOptions.splitPaneContentId;
 
   return (
     <>
-      <SplashScreen {...mergedOptions.splashScreenProps} />
-      <OptionsProvider options={mergedOptions}>
+      {splashScreenProps.enabled && <SplashScreen {...splashScreenProps} />}
+      <OptionsProvider options={sharedOptions}>
         <InAppNavigationProvider tabLabels={tabLabels}>
           <KonstaProvider
             theme={theme}
-            dark={mergedOptions.dark}
-            touchRipple={mergedOptions.touchRipple}
+            dark={sharedOptions.dark}
+            touchRipple={sharedOptions.touchRipple}
           >
             <UIPreferencesProvider CustomLoaderComponent={<LoaderCustom />}>
               <ion-app class={`k-${theme}`}>
                 <ion-split-pane
                   class={'mx-auto max-w-4xl'}
-                  disabled={mergedOptions.splitPaneLayoutDisabled}
-                  when={when ?? mergedOptions.splitPaneBreakpoint}
+                  disabled={sharedOptions.splitPaneLayoutDisabled}
+                  when={when ?? sharedOptions.splitPaneBreakpoint}
                   content-id={id}
                 >
                   <ion-menu content-id={id}>
                     <ion-header>
                       <ion-toolbar
-                        color={toolbarColor || mergedOptions.toolbarColor}
+                        color={toolbarColor || sharedOptions.toolbarColor}
                       >
                         <ion-buttons slot={'start'}>
                           <InAppLink
