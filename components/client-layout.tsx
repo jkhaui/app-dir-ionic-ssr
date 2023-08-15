@@ -9,12 +9,27 @@ import {
   MagnifyingGlassIcon,
   PersonIcon,
 } from '@radix-ui/react-icons';
-import { useIonicLoader, useScreenTitle } from '@/hooks';
+import { useIonicLoader, useIsMobileDevice } from '@/hooks';
 import { IonColors } from '@/types';
-import { InAppNavigationProvider, OptionsProvider } from '@/context-providers';
+import {
+  InAppNavigationProvider,
+  OptionsProvider,
+  UIPreferencesProvider,
+} from '@/context-providers';
+import { SideNavBar } from './side-nav-bar';
+import { InAppLink } from './in-app-link';
+import {
+  getPlatformThemeOrMode,
+  LOCAL_STORAGE_KEY_DEFAULT_THEME,
+  PlatformThemeOrMode,
+  TitleSizes,
+} from '@/utils';
+import useLocalStorageState from 'use-local-storage-state';
+import { SplashScreen } from '@/components/splash-screen';
+import { LoaderCustom } from '@/components/loading-components/loader-custom';
 
 interface Options {
-  theme: 'ios' | 'material';
+  theme: PlatformThemeOrMode;
   dark?: boolean;
   touchRipple?: boolean;
   splitPaneLayoutDisabled?: boolean;
@@ -25,11 +40,12 @@ interface Options {
   animatePresenceMode?: string;
   animatePresenceInitial?: boolean;
   toolbarColor?: string;
-  headerTitleSize: 'large' | 'small' | undefined;
+  headerTitleSize: TitleSizes;
   headerTitleColor: IonColors;
   disablePwaHelper?: PwaHelperOptions;
   showBackButtonText?: boolean;
   backButtonText?: React.ReactNode | string;
+  basePath?: string;
 }
 
 type PwaHelperOptions = {
@@ -37,8 +53,9 @@ type PwaHelperOptions = {
   noTextSelection: boolean;
   noIosZoomOnFocus: boolean;
 };
+
 const defaultOptions = {
-  theme: 'ios',
+  theme: PlatformThemeOrMode.IOS,
   splitPaneContentId: 'main',
   splitPaneBreakpoint: 'lg',
   toolbarColor: 'transparent',
@@ -49,8 +66,21 @@ const defaultOptions = {
   pullToRefresh: true,
   showTabsOnDesktop: true,
   splitPaneLayoutDisabled: false,
-  headerTitleSize: 'large',
+  headerTitleSize: TitleSizes.LARGE,
   showBackButtonText: true,
+  splashScreenProps: {
+    enabled: true,
+    duration: 1000,
+    colors: { bg: 'bg-slate-900' },
+    LogoComponent: (
+      <img
+        src={'/logo-no-background.png'}
+        width={160}
+        height={'auto'}
+        alt={'splash screen'}
+      />
+    ),
+  },
 };
 
 export const ClientLayout = ({
@@ -60,20 +90,27 @@ export const ClientLayout = ({
   SplitPaneContentSlot = null,
   splitPaneProps = {},
   animatePresenceProps = {},
+  NavLogoComponent = null,
   tabLabels,
   tabIcons = [HomeIcon, PersonIcon, MagnifyingGlassIcon, GearIcon],
   tabbarProps = {},
 }) => {
-  useIonicLoader();
-
-  const title = useScreenTitle(tabLabels[0]);
-
   const mergedOptions = {
     ...defaultOptions,
     ...options,
     headerTitle,
     tabLabels,
   };
+
+  const [theme] = useLocalStorageState(LOCAL_STORAGE_KEY_DEFAULT_THEME, {
+    defaultValue: getPlatformThemeOrMode(mergedOptions.theme),
+  });
+
+  useIonicLoader({
+    mode: theme,
+  });
+
+  const isMobileDevice = useIsMobileDevice();
 
   const {
     when,
@@ -89,48 +126,62 @@ export const ClientLayout = ({
   const id = contentId || defaultOptions.splitPaneContentId;
 
   return (
-    <OptionsProvider options={mergedOptions}>
-      <InAppNavigationProvider>
-        <KonstaProvider
-          theme={options?.theme || defaultOptions.theme}
-          dark={options?.dark ?? defaultOptions.dark}
-          touchRipple={options?.touchRipple ?? defaultOptions.touchRipple}
-        >
-          <ion-app>
-            <ion-split-pane
-              disabled={mergedOptions.splitPaneLayoutDisabled}
-              when={when ?? mergedOptions.splitPaneBreakpoint}
-              content-id={id}
-            >
-              <ion-menu content-id={id}>
-                <ion-header>
-                  <ion-toolbar
-                    color={toolbarColor || mergedOptions.toolbarColor}
-                  >
-                    <ion-title>{sidePanelTitle}</ion-title>
-                  </ion-toolbar>
-                </ion-header>
-                <ion-content fullscreen={sidePanelFullscreenContent}>
-                  {SplitPaneContentSlot}
-                </ion-content>
-              </ion-menu>
-              <div id={id} className={'md:min-h-full md:min-w-full'}>
-                {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
-                {children}
-                {mergedOptions.showTabsOnDesktop && (
-                  <TabNavBar
-                    tabLabels={tabLabels}
-                    tabIcons={tabIcons}
-                    labels={labels}
-                    icons={icons}
-                    {...tabbarRestProps}
-                  />
-                )}
-              </div>
-            </ion-split-pane>
-          </ion-app>
-        </KonstaProvider>
-      </InAppNavigationProvider>
-    </OptionsProvider>
+    <>
+      <SplashScreen {...mergedOptions.splashScreenProps} />
+      <OptionsProvider options={mergedOptions}>
+        <InAppNavigationProvider tabLabels={tabLabels}>
+          <KonstaProvider
+            theme={theme}
+            dark={mergedOptions.dark}
+            touchRipple={mergedOptions.touchRipple}
+          >
+            <UIPreferencesProvider CustomLoaderComponent={<LoaderCustom />}>
+              <ion-app class={`k-${theme}`}>
+                <ion-split-pane
+                  class={'mx-auto max-w-4xl'}
+                  disabled={mergedOptions.splitPaneLayoutDisabled}
+                  when={when ?? mergedOptions.splitPaneBreakpoint}
+                  content-id={id}
+                >
+                  <ion-menu content-id={id}>
+                    <ion-header>
+                      <ion-toolbar
+                        color={toolbarColor || mergedOptions.toolbarColor}
+                      >
+                        <ion-buttons slot={'start'}>
+                          <InAppLink
+                            className={'mr-2-safe ml-2-safe'}
+                            href={'/'}
+                          >
+                            {NavLogoComponent}
+                          </InAppLink>
+                        </ion-buttons>
+                        <ion-title>{sidePanelTitle}</ion-title>
+                      </ion-toolbar>
+                    </ion-header>
+                    <ion-content fullscreen={sidePanelFullscreenContent}>
+                      <SideNavBar tabLabels={tabLabels} tabIcons={tabIcons} />
+                    </ion-content>
+                  </ion-menu>
+                  <div id={id} className={'md:min-h-full md:min-w-full'}>
+                    {/*<ion-router-outlet>{tabs}</ion-router-outlet>*/}
+                    {children}
+                    {isMobileDevice && (
+                      <TabNavBar
+                        tabLabels={tabLabels}
+                        tabIcons={tabIcons}
+                        labels={labels}
+                        icons={icons}
+                        {...tabbarRestProps}
+                      />
+                    )}
+                  </div>
+                </ion-split-pane>
+              </ion-app>
+            </UIPreferencesProvider>
+          </KonstaProvider>
+        </InAppNavigationProvider>
+      </OptionsProvider>
+    </>
   );
 };
