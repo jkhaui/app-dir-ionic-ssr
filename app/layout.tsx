@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ClientLayout as Wrapper } from '@/components';
+import { App, Image } from '@/components';
 import { TITLE } from '@/utils';
 
 import './globals.css';
@@ -30,17 +30,33 @@ export const metadata: Metadata = {
 
 const tabLabels = ['Home', 'Account', 'Search', 'Settings'];
 
-export default async function RootLayout(props: { tabs: React.ReactNode }) {
-  const { tabs, modal, children } = props;
-  console.log(props);
+export default async function RootLayout({
+  tabs,
+  children,
+}: {
+  tabs: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <html lang='en' className={inter.className}>
-      <body className='bg-slate-900'>
-        <Wrapper
+      <body
+        className={'fixed inset-0 z-0 min-h-screen bg-cover'}
+        style={{ backgroundImage: "url('/background.png')" }}
+      >
+        <span className={'fixed inset-0 bg-slate-900 opacity-50'} />
+        <App
+          NavLogoComponent={
+            <Image
+              alt={'Acme Logo'}
+              src={'/logo-no-background.png'}
+              width={48}
+            />
+          }
           headerTitle={TITLE}
           options={{
-            mode: 'ios',
-            dark: false,
+            theme: 'ios',
+            dark: true,
+            // dark: false,
           }}
           tabbarProps={{
             icons: true,
@@ -50,7 +66,7 @@ export default async function RootLayout(props: { tabs: React.ReactNode }) {
         >
           {tabs}
           {children}
-        </Wrapper>
+        </App>
       </body>
     </html>
   );

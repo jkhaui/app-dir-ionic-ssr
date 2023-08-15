@@ -83,7 +83,7 @@ const defaultOptions = {
   },
 };
 
-export const ClientLayout = ({
+export const App = ({
   options,
   children,
   headerTitle = null,
