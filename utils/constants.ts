@@ -8,3 +8,7 @@ export const breakpoints = {
   lg: '1136px',
   xl: '1200px',
 };
+
+export const LOCAL_STORAGE_KEY_IN_APP_NAVIGATION = 'nav.context';
+export const LOCAL_STORAGE_KEY_DEFAULT_THEME = 'ionext.theme';
+export const SESSION_STORAGE_KEY_SPLASH_SCREEN = 'splash-screen';
