@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import { App, Image } from '@/components';
 import { TITLE } from '@/utils';
 
@@ -17,10 +17,12 @@ import '@ionic/core/css/typography.css';
 import 'overlayscrollbars/overlayscrollbars.css';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-const inter = Inter({
+const poppins = Poppins({
+  weight: ['400', '600', '800'],
+  style: ['normal', 'italic'],
   subsets: ['latin'],
   display: 'swap',
-  variable: '--ion-default-font',
+  variable: '--ion-font-family',
 });
 
 export const metadata: Metadata = {
@@ -38,7 +40,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en' className={inter.className}>
+    <html lang='en' className={poppins.variable}>
       <body
         className={'fixed inset-0 z-0 min-h-screen bg-cover'}
         style={{ backgroundImage: "url('/background.png')" }}

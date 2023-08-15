@@ -27,8 +27,8 @@ module.exports = konstaConfig({
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
-        ios: ['var(--ion-default-font)'],
-        material: ['var(--ion-default-font)'],
+        ios: 'var(--ion-font-family)',
+        material: ['var(--ion-font-family)'],
       },
     },
   },
