@@ -1,10 +1,17 @@
+export enum ViewTypes {
+  TAB = 'tab',
+  SECONDARY = 'secondary',
+  POPUP = 'popup',
+  FULLSCREEN = 'fullscreen',
+}
+
 export enum StackingContext {
-  BOTTOM = 'z-0',
-  LAYER_1 = 'z-10',
-  LAYER_2 = 'z-20',
-  LAYER_3 = 'z-30',
-  LAYER_4 = 'z-40',
-  TOP = 'z-50',
+  EELEVATION_BOTTOM = 'z-0',
+  ELEVATION_LOW = 'z-10',
+  ELEVATION_LOWER = 'z-20',
+  ELEVATION_MID = 'z-30',
+  ELEVATION_HIGHER = 'z-40',
+  ELEVATION_TOP = 'z-50',
 }
 
 export enum TitleSizes {

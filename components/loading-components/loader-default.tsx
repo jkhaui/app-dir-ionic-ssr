@@ -1,20 +1,31 @@
 'use client';
 
-import { useLottie } from 'lottie-react';
-import animationData from '@/public/loading-animation.json';
+import * as React from 'react';
+import {useIsDesktop, useUIPreferences} from '@/hooks';
+import {LoaderSize, LoaderType, mapLoaderSizeToStyleObj} from '@/utils';
 
-export const LoaderDefault = ({ size }) => {
-  const { View } = useLottie(
-    {
-      animationData,
-      autoplay: true,
-      loop: true,
-    },
-    {
-      height: 'auto',
-      width: size || 160,
+interface LoaderDefaultProps {
+    size?: LoaderSize;
+    loaderType?: LoaderType;
+}
+
+export const LoaderDefault = ({
+                                  size = LoaderSize.DEFAULT,
+                                  loaderType = LoaderType.ICON_NATIVE,
+                              }: LoaderDefaultProps) => {
+    const isDesktop = useIsDesktop();
+
+    const {CustomLoaderComponent} = useUIPreferences();
+
+    if (loaderType === LoaderType.ICON_CUSTOM && !CustomLoaderComponent) {
+        throw new Error(
+            '`CustomLoaderComponent` is required when loaderType is set to ICON_CUSTOM'
+        );
     }
-  );
 
-  return View;
+    return isDesktop || loaderType === LoaderType.ICON_CUSTOM ? (
+        CustomLoaderComponent
+    ) : (
+        <ion-spinner style={mapLoaderSizeToStyleObj(size)}></ion-spinner>
+    );
 };

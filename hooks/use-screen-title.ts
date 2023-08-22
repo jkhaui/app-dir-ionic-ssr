@@ -1,11 +1,8 @@
 'use client';
 
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import { ROOT_PATH } from '@/utils';
+import { ROOT_PATH, uppercaseString } from '@/utils';
 import { useOptions } from './use-options';
-
-const uppercaseString = (string: string) =>
-  string[0].toUpperCase() + string.substring(1);
 
 export const useScreenTitle = () => {
   const segment = useSelectedLayoutSegment();

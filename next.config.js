@@ -11,6 +11,9 @@ const nextConfig = {
     unoptimized: true,
   },
   transpilePackages: ['@ionic/core'],
+  experimental: {
+    typedRoutes: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

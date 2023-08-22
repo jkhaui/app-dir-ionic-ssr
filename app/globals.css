@@ -28,3 +28,11 @@ ion-menu::part(container) {
     width: 30px;
     height: 30px;
 }
+
+ion-menu > ion-header > ion-toolbar {
+    --border-width: 0 !important;
+}
+
+.header-md {
+    box-shadow: none;
+}

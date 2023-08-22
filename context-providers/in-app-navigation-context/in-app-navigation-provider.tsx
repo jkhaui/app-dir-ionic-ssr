@@ -2,74 +2,137 @@
 
 import * as React from 'react';
 import InAppNavigationContext from './in-app-navigation-context';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegments } from 'next/navigation';
+import {
+  getTitleFromSegments,
+  isSSR,
+  ROOT_PATH,
+  SESSION_STORAGE_IN_APP_HISTORY_KEY,
+} from '@/utils';
+import { produce } from 'immer';
+import superjson from 'superjson';
+import { useSegmentAsRoute } from '@/hooks';
+import useSessionStorageState from 'use-session-storage-state';
 
 export enum NavigationOps {
-  INSTANTIATE_TAB_ROUTES = 'instantiate',
   REPLACE_TAB_ROUTE = 'replace',
-  PUSH_NON_TAB_ROUTE = 'push',
-  POP_NON_TAB_ROUTE = 'pop',
-  CLEAR_NON_TAB_ROUTES = 'clear',
+  PUSH_SECONDARY_ROUTE_TO_TAB_HISTORY = 'push',
+  POP_SECONDARY_ROUTE_FROM_TAB_HISTORY = 'pop',
+  CLEAR_TAB_HISTORY = 'clear',
   START_SCROLL_TO_TOP = 'start-scroll',
   END_SCROLL_TO_TOP = 'end-scroll',
 }
 
 interface InAppNavigation {
   activeTab: string;
-  tabRoutes: string[];
-  nonTabHistoryStack: string[];
+  tabMetadata: any;
   scrollToTop: boolean;
+  segments: any;
 }
 
-export const InAppNavigationProvider = ({ children }) => {
-  const pathname = usePathname();
+export const InAppNavigationProvider = ({ children, tabLabels }) => {
+  const tabRoutes = React.useMemo(
+    () => [
+      ROOT_PATH,
+      ...tabLabels
+        .slice(1)
+        .map(
+          (route: string) =>
+            `${route !== ROOT_PATH ? ROOT_PATH : ''}${route.toLowerCase()}`
+        ),
+    ],
+    [tabLabels]
+  );
+  const initialTabsHistoryState = React.useMemo(() => {
+    const tabs = new Map();
+    tabRoutes.forEach((route) => {
+      tabs.set(route, [
+        {
+          screenId: route,
+          scrollDepth: 0,
+        },
+      ]);
+    });
 
+    return tabs;
+  }, [tabRoutes]);
+
+  const segmentRoute = useSegmentAsRoute();
+  const segments = useSelectedLayoutSegments();
+
+  // const [inAppNavigation, setInAppNavigation, { removeItem }] =
+  //   useSessionStorageState<InAppNavigation>(
+  //     SESSION_STORAGE_IN_APP_HISTORY_KEY,
+  //     {
+  //       defaultValue: {
+  //         activeTab: segmentRoute,
+  //         tabMetadata: initialTabsHistoryState,
+  //         scrollToTop: false,
+  //         segments: segments,
+  //       },
+  //       serializer: {
+  //         stringify: superjson.stringify,
+  //         parse: superjson.parse,
+  //       },
+  //     }
+  //   );
   const [inAppNavigation, setInAppNavigation] = React.useState<InAppNavigation>(
     {
-      activeTab: pathname,
-      tabRoutes: [],
-      nonTabHistoryStack: [],
+      activeTab: segmentRoute,
+      tabMetadata: initialTabsHistoryState,
       scrollToTop: false,
+      segments: segments,
     }
   );
 
+  const pathname = usePathname();
+  const [currentTitle, setCurrentTitle] = React.useState<string>(
+    getTitleFromSegments(pathname)
+  );
+  const updateCurrentTitle = React.useCallback((title: string) => {
+    setCurrentTitle(title);
+  }, []);
+
   const updateInAppNavigation = React.useCallback(
-    (op: NavigationOps, params?: { path?: string; routes?: string[] }) => {
+    (
+      op: NavigationOps,
+      params?: {
+        path?: string;
+        currentTitle?: string;
+        routes?: string[];
+      }
+    ) => {
       switch (op) {
-        case NavigationOps.INSTANTIATE_TAB_ROUTES:
-          setInAppNavigation((prevState: InAppNavigation) => ({
-            ...prevState,
-            ...(params?.routes && {
-              tabRoutes: params.routes,
-            }),
-          }));
-          break;
         case NavigationOps.REPLACE_TAB_ROUTE:
           setInAppNavigation((prevState: InAppNavigation) => ({
             ...prevState,
-            ...(params?.path && {
-              activeTab: params.path,
+            ...(params?.screenId && {
+              activeTab: params.screenId,
             }),
           }));
           break;
-        case NavigationOps.CLEAR_NON_TAB_ROUTES:
-          setInAppNavigation((prevState) => ({
-            ...prevState,
-            nonTabHistoryStack: [],
-          }));
-          break;
-        case NavigationOps.POP_NON_TAB_ROUTE:
-        case NavigationOps.PUSH_NON_TAB_ROUTE:
+        case NavigationOps.CLEAR_TAB_HISTORY:
           setInAppNavigation(
-            ({ nonTabHistoryStack, ...prevState }: InAppNavigation) => ({
-              ...prevState,
-              nonTabHistoryStack:
-                op === NavigationOps.PUSH_NON_TAB_ROUTE
-                  ? [
-                      ...(nonTabHistoryStack && nonTabHistoryStack),
-                      params?.path,
-                    ]
-                  : nonTabHistoryStack.slice(0, -1),
+            produce((draft) => {
+              const tabHistory = draft.tabMetadata.get(segmentRoute);
+              if (tabHistory.length > 1) {
+                tabHistory.splice(0, tabHistory.length);
+              }
+            })
+          );
+          break;
+        case NavigationOps.POP_SECONDARY_ROUTE_FROM_TAB_HISTORY:
+        case NavigationOps.PUSH_SECONDARY_ROUTE_TO_TAB_HISTORY:
+          setInAppNavigation(
+            produce((draft) => {
+              const tabHistory = draft.tabMetadata.get(segmentRoute);
+
+              op === NavigationOps.PUSH_SECONDARY_ROUTE_TO_TAB_HISTORY
+                ? tabHistory.push({
+                    screenId: params?.screenId,
+                    scrollDepth: 0,
+                  })
+                : tabHistory.length > 0 && tabHistory.pop();
             })
           );
           break;
@@ -83,18 +146,24 @@ export const InAppNavigationProvider = ({ children }) => {
         default:
           break;
       }
-    },
-    []
+    }
   );
 
-  const memoizedInAppNavigationObj = React.useMemo(
-    () => ({
-      inAppNavigation,
-      updateInAppNavigation,
-    })
-    // [inAppNavigation, updateInAppNavigation]
-  );
+  React.useEffect(() => {
+    setCurrentTitle(getTitleFromSegments(pathname));
+  }, [pathname]);
 
+  const clearAllNavigationHistory = React.useCallback(() => {}, []);
+
+  const memoizedInAppNavigationObj = React.useMemo(() => ({
+    inAppNavigation,
+    updateInAppNavigation,
+    tabRoutes,
+    currentTitle,
+    updateCurrentTitle,
+    clearAllNavigationHistory,
+  }));
+  // console.log(inAppNavigation);
   return (
     <InAppNavigationContext.Provider value={memoizedInAppNavigationObj}>
       {children}

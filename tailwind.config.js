@@ -1,5 +1,5 @@
 const konstaConfig = require('konsta/config');
-const { breakpoints } = require('./utils');
+const { breakpoints, PRIMARY_COLOR } = require('./utils');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = konstaConfig({

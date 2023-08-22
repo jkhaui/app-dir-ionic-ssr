@@ -26,6 +26,24 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/tab-screens": [
+        "./app/_tab-screens/index"
+      ],
+      "@/tab-screens/*": [
+        "./app/_tab-screens/*"
+      ],
+      "@/secondary-screens": [
+        "./app/_secondary-screens/index"
+      ],
+      "@/secondary-screens/*": [
+        "./app/_secondary-screens/*"
+      ],
+      "@/secondary-routes-config": [
+        "./app/_secondary-screens/_map-secondary-routes-to-view.config.tsx"
+      ],
+      "@/tab-routes-config": [
+        "./app/_tab-screens/_map-tab-routes-to-view.config.tsx"
       ]
     }
   },

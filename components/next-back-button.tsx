@@ -5,7 +5,7 @@ import { Button, Icon } from 'konsta/react';
 import { ArrowLeftIcon, CaretLeftIcon } from '@radix-ui/react-icons';
 
 import { IonColors } from '@/types';
-import { useInAppNavigation, useNavigateBack, useOptions } from '@/hooks';
+import { useNavigateBack, useOptions } from '@/hooks';
 
 interface NextBackButtonProps {
   defaultHref: string | undefined;
@@ -16,7 +16,7 @@ interface NextBackButtonProps {
 }
 
 export const NextBackButton = ({
-  defaultHref,
+  defaultHref = '/',
   text,
   color,
   type,
@@ -24,23 +24,7 @@ export const NextBackButton = ({
 }: NextBackButtonProps) => {
   const options = useOptions();
 
-  const { inAppNavigation } = useInAppNavigation();
-
-  const handleNavigateBack = useNavigateBack();
-
-  const [display, setDisplay] = React.useState(
-    defaultHref !== undefined || inAppNavigation.nonTabHistoryStack?.length > 0
-  );
-
-  React.useEffect(() => {
-    if (inAppNavigation.nonTabHistoryStack?.length > 0) {
-      setDisplay(true);
-    }
-  }, [inAppNavigation, inAppNavigation.nonTabHistoryStack]);
-
-  if (!display) {
-    return null;
-  }
+  const handleNavigateBack = useNavigateBack(defaultHref);
 
   return (
     <Button
@@ -50,9 +34,9 @@ export const NextBackButton = ({
         handleNavigateBack();
       }}
       colors={{
-        activeBgIos: '',
-        activeBgMaterial: '',
+        textMaterial: 'text-gray-300',
       }}
+      large
     >
       <Icon
         ios={
@@ -61,7 +45,7 @@ export const NextBackButton = ({
               'back-button-wrapper flex items-center font-normal capitalize'
             }
           >
-            {CustomBackIcon ?? <CaretLeftIcon />}
+            {CustomBackIcon ?? <CaretLeftIcon className={'h-6 w-6'} />}
             {options?.showBackButtonText && ' '}
             {options?.backButtonText ??
             (options?.showBackButtonText && options.mode === 'ios')
@@ -69,7 +53,7 @@ export const NextBackButton = ({
               : ''}
           </span>
         }
-        material={CustomBackIcon ?? <ArrowLeftIcon />}
+        material={CustomBackIcon ?? <ArrowLeftIcon className={'h-6 w-6'} />}
       />
     </Button>
   );
